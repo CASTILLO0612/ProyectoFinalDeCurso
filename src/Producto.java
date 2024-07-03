@@ -1,4 +1,4 @@
-public class Producto {
+public class Producto { //angel quiere hacerla abstracta 
 
     public String nombre;
     public String ID;
@@ -32,5 +32,8 @@ public class Producto {
         System.out.println("Descripcion del Producto "+this.descripcion);
         System.out.println("Cantidad de Productos Disponible: " + this.cantidadDisponible);
         
+    }
+    public double restarcantidad(double n ){
+        return cantidadDisponible-n;
     }
 }
