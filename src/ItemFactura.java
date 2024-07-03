@@ -24,4 +24,7 @@ public class ItemFactura {
         System.out.println("Precio Unitario: " + producto.precio);
         System.out.println("Subtotal: " + calcularSubTotal());
     }
+    public Producto getProducto (){
+        return producto;
+    }
 }
