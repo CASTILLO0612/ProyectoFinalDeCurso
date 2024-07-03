@@ -5,13 +5,15 @@ public class Producto {
     public double precio;
     private double costo;
     public String descripcion;
+    public int cantidadDisponible;
 
-    public Producto(String  nombre, String ID, double precio, double costo, String descripcion){
+    public Producto(String  nombre, String ID, double precio, double costo, String descripcion,int cantidadDisponible){
         this.nombre=nombre;
         this.ID=ID;
         this.precio=precio;
         this.costo=costo;
         this.descripcion=descripcion;
+        this.cantidadDisponible = cantidadDisponible;
     }
 
     public double getCost(){
@@ -28,6 +30,7 @@ public class Producto {
         System.out.println("Precio de venta del Producto C$"+this.precio);
         System.out.println("Precio de costo del Prodcuto C$"+this.costo);
         System.out.println("Descripcion del Producto "+this.descripcion);
+        System.out.println("Cantidad de Productos Disponible: " + this.cantidadDisponible);
         
     }
 }
