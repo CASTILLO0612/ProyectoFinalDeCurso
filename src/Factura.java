@@ -1,13 +1,12 @@
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Factura {
 
     public int numdefactura;
     public Date fecha;
-    private List<ItemFactura> items;
+    private ArrayList<ItemFactura> items;
 
     public Factura(int numdefactura){
         this.numdefactura=numdefactura;

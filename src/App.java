@@ -281,7 +281,9 @@ public class App {
                 if (n>10) {
                     itemFactura.aplicarDescuento(10.00);
                 }
+                leer.nextLine();
             } 
+        
 
             for (int j = 0; j < Lista.size(); j++) {
                 Producto otroProducto = Lista.get(j);
@@ -295,15 +297,18 @@ public class App {
                     System.out.println("-Cantidad Disponible ---> "+(otroProducto.cantidadDisponible-n));
                     System.out.println("=========================================");
                     otroProducto.cantidadDisponible-=n;
-                    Listatem.add(otroProducto);
-                    itemFactura = new ItemFactura(otroProducto, n);
-                    factura = new Factura(1);
-                    factura.agregarItem(itemFactura);
+                    itemFactura = new ItemFactura(otroProducto, n); 
                 }
-             }
-             leer.nextLine();
-             contador++;
-             } while (contador<cantidad);
-             factura.imprimirFactura();
-         }  
+            }
+            
+                factura.agregarItem(itemFactura);
+            
+            
+            
+            
+            leer.nextLine();
+            contador++;
+            } while (contador<cantidad);
+            factura.imprimirFactura();
+        }  
     }
