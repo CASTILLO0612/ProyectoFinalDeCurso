@@ -20,7 +20,8 @@ public class App {
     public static ArrayList <Producto> Listatem = new ArrayList<Producto>();
     public static Producto otroProducto;
     public static ItemFactura itemFactura; 
-
+    public static int n;
+    public static Factura factura = new Factura(1);
     
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
@@ -95,12 +96,13 @@ public class App {
 
                 switch (opcion) {
                     case 1://agregar cliente 
-                        
+                        agregarcliente();
                         break;
                     case 2: // mostrar cliente 
-                        
+                        mostrandoCliente();
                         break;
                     case 3: 
+                            //Registrar ventas y Clientes
                         ventas();
                         break;
                 
@@ -188,7 +190,7 @@ public class App {
                 System.out.println("-Precio de venta del Producto ---> C$"+agg.precio);
                 System.out.println("-Costo del Producto ---> C$"+agg.getCost());
                 System.out.println("-Descripcion ---> "+agg.descripcion);
-                System.out.println("-Cantidad Disponible ---> "+agg.cantidadDisponible);
+                System.out.println("-Cantidad Disponible ---> "+(agg.cantidadDisponible));
                 System.out.println("=========================================");
                 
             }
@@ -229,9 +231,9 @@ public class App {
         }
     }
     public static void agregarcliente(){
-        System.out.println("Ingrese el cliente ");
+        System.out.print("Ingrese el nombre cliente: ");
         NamedeCliente= leer.nextLine();
-        System.out.println("Agregar el num de cliente ");
+        System.out.println("Numero del Teléfono: ");
         NumdeCliente= leer.nextLine();
         Cliente cliente= new Cliente(NamedeCliente, NumdeCliente);
         ListaCliente.add(cliente);
@@ -243,13 +245,12 @@ public class App {
         }else{
             for (Cliente mostrar : ListaCliente) {
                 mostrar.mostrarCliente();
-        }
- 
+            }
         }
     }
     public static void buscarproductos(){
         if (Lista.isEmpty()){
-            System.out.println("Debe agregar productos para que pueedan ser buscados ");
+            System.out.println("Debe agregar productos para que puedan ser buscados ");
         } else{
             System.out.print("Ingrese el codigo del producto a buscar: ");
             ID = leer.nextLine();
@@ -260,45 +261,49 @@ public class App {
                 producto.mostrarProducts();
                 return; 
             }
-
         }
     }
     public static void ventas(){
-        //producto 
-        //cantidad 
-        // producto debe disminuir, cant - nuevacantidad= cant 
-        // condicionar descuento 
-        // if cant >= n 
 
+        
+        int contador = 0;
+        System.out.println("¿Cuantos productos venderá?");
+        int cantidad = leer.nextInt();
+        leer.nextLine();
 
-       
-        
-        
-            System.out.print("Digite el ID del Producto a vender: ");
-            ID = leer.nextLine();
-            System.out.println("cantidad de produtos que se venderan");
-            int n= leer.nextInt();
+            do {
+
+            buscarproductos();
+            System.out.print("Digite la cantidad del producto a vender: ");
+            n= leer.nextInt();
             if (n>cantidadDisponible) {
-                System.out.println("NO SE PUEDE REALIZAR LA VENTA");
+                System.out.println("No se puede realizar la venta");
                 if (n>10) {
-                    itemFactura.aplicarDescuento(0.10);
+                    itemFactura.aplicarDescuento(10.00);
                 }
             } 
 
             for (int j = 0; j < Lista.size(); j++) {
-                Producto nuevoprod = Lista.get(j);
+                Producto otroProducto = Lista.get(j);
                 if (Lista.get(j).ID.equals(ID)) {
                     System.out.println("Producto "+(j+1));
-                    System.out.println("-Nombre del Producto ---> "+nuevoprod.nombre);
-                    System.out.println("-Código ---> "+nuevoprod.ID);
-                    System.out.println("-Precio de venta del Producto ---> C$"+nuevoprod.precio);
-                    System.out.println("-Costo del Producto ---> C$"+nuevoprod.getCost());
-                    System.out.println("-Descripcion ---> "+nuevoprod.descripcion);
-                    System.out.println("-Cantidad Disponible ---> "+(nuevoprod.restarcantidad(n)));
+                    System.out.println("-Nombre del Producto ---> "+otroProducto.nombre);
+                    System.out.println("-Código ---> "+otroProducto.ID);
+                    System.out.println("-Precio de venta del Producto ---> C$"+otroProducto.precio);
+                    System.out.println("-Costo del Producto ---> C$"+otroProducto.getCost());
+                    System.out.println("-Descripcion ---> "+otroProducto.descripcion);
+                    System.out.println("-Cantidad Disponible ---> "+(otroProducto.cantidadDisponible-n));
                     System.out.println("=========================================");
-                    Listatem.add(nuevoprod);
-                    Lista=Listatem;
+                    otroProducto.cantidadDisponible-=n;
+                    Listatem.add(otroProducto);
+                    itemFactura = new ItemFactura(otroProducto, n);
+                    factura = new Factura(1);
+                    factura.agregarItem(itemFactura);
+                }
              }
-         }
+             leer.nextLine();
+             contador++;
+             } while (contador<cantidad);
+             factura.imprimirFactura();
+         }  
     }
-}
