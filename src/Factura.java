@@ -1,15 +1,14 @@
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Factura {
 
-    private String numdefactura;
+    public int numdefactura;
     public Date fecha;
-    private List<ItemFactura> items;
+    private ArrayList<ItemFactura> items;
 
-    public Factura(String numdefactura){
+    public Factura(int numdefactura){
         this.numdefactura=numdefactura;
         this.fecha= new Date();
         this.items = new ArrayList<>();
@@ -30,10 +29,10 @@ public class Factura {
     public void imprimirFactura(){
         System.out.println("Factura #" + numdefactura);
         System.out.println("Fecha: " + fecha.toString());
-        System.out.println("Vehiculos comprados:");
+        System.out.println("Artículos comprados:");
         for (ItemFactura item : items) {
-            System.out.println("- " + item.getProducto().nombre + ": $" + item.calcularSubTotal());
+            System.out.println("- " + item.getProducto().nombre + ": C$" + item.calcularSubTotal());
         }
-        System.out.println("Total: $" + calcularTotal());
+        System.out.println("Total: C$" + calcularTotal());
     }
 }
