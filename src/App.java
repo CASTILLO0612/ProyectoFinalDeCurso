@@ -1,14 +1,22 @@
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
 
-    public static String nombre;
-    public static  String ID;
-    public static double precio;
-    private static double costo;
-    public static String descripcion;
-    public static int cantidadDisponible;
+    public static String nombre="";
+    public static  String ID="";
+    public static double precio=0;
+    public static String preciofalso="";
+    private static double costo=0;
+    private static String costofalso="";
+    public static String descripcion="";
+    public static int cantidadDisponible=0;
+    public static String cantidadDisponiblefalsa="";
     public static String NamedeCliente;
     public static String NumdeCliente;
     public static int CantidadProducts;
@@ -22,10 +30,17 @@ public class App {
     public static ItemFactura itemFactura; 
     public static int n;
     public static Factura factura = new Factura(1);
+    public static String rutname= "C:\\Users\\LEGION\\Desktop\\Proyecto things\\ProyectoFinalDeCurso\\Archivo_Producto\\";
+    public static RandomAccessFile archivo=null;
+    private static byte []arreglo=null;
+    private static ByteArrayOutputStream escribir=null;
+    private static ObjectOutputStream salida=null;
+    private static ByteArrayInputStream leer2=null;
+    private static ObjectInputStream entrada = null;
+    
     
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
-        
     
         do {
 
@@ -44,6 +59,7 @@ public class App {
                     System.out.println("3. Mostrar Productos");
                     System.out.println("4. Modificar Productos");
                     System.out.println("5. Salir");
+                    System.out.println("6. nuevas opciones");
                     opcion = leer.nextInt();
                     
                 } catch (Exception e) {
@@ -76,8 +92,18 @@ public class App {
 
                     cont = false;
                     break;
-                    //Resolver el bug de salir de Producto
 
+                    case 6:
+                    if(pedirDatos()){
+                    
+                        try {
+                            escribirEnArchivoAleatorio();
+                            
+                        } catch (Exception e) {
+                            System.out.println("No se han podido registrar los producto.");
+                        }
+                    }
+                    break;
                     default:
                     System.out.println("Fuera de rango. Coloque en el rango (1-5)");
                         break;
@@ -126,24 +152,59 @@ public class App {
 
     public static void agregandoProducts(){
 
-        System.out.print("Nombre del Producto: ");
-        nombre  = leer.nextLine();
-        System.out.print("ID: ");
+        do {
+            System.out.print("Nombre del Producto: ");
+            nombre  = leer.nextLine();
+
+        } while (nombre.isEmpty() ||  nombre.length()>=25);
+
+        do {
+            System.out.print("ID: ");
         ID = leer.nextLine();
-        System.out.print("Precio del Producto: ");
-        precio = leer.nextDouble();
-        leer.nextLine();
-        System.out.print("Costo del Producto: ");
-        costo= leer.nextDouble();
-        leer.nextLine();
-        System.out.print("Descripcion: ");
+
+        } while (ID.isEmpty());
+        
+        
+        do {
+            System.out.print("Precio del Producto: ");
+            preciofalso= leer.nextLine();
+
+            try {
+                precio= Double.parseDouble(preciofalso);
+            } catch (Exception e) {
+                System.out.println("Escribir numeros");
+            }
+        } while (preciofalso.isEmpty() || precio<=0);
+        
+
+        do {
+            System.out.print("Costo del Producto: ");
+            costofalso= leer.nextLine();
+            try {
+                costo=Double.parseDouble(costofalso);
+            } catch (Exception e) {
+                System.out.println("Solo se permiten numeros mayores a 0");
+            }
+        } while (costofalso.isEmpty() || costo<=0);
+        
+        do {
+            System.out.print("Descripcion: ");
         descripcion = leer.nextLine();
-        System.out.print("Cantidad Disponible: ");
-        cantidadDisponible = leer.nextInt();
+        } while (descripcion.isEmpty() || descripcion.length()>=50);
+        
+        do {
+            System.out.print("Cantidad Disponible: ");
+        cantidadDisponiblefalsa = leer.nextLine();
+        try {
+            cantidadDisponible=Integer.parseInt(cantidadDisponiblefalsa);
+        } catch (Exception e) {
+            System.out.println("Solo se permiten numeros enteros ");
+        }
+        } while (cantidadDisponiblefalsa.isEmpty() ||cantidadDisponible<=0);
+        
         otroProducto = new Producto(nombre, ID, precio, costo, descripcion, cantidadDisponible);
         Lista.add(otroProducto);
 
-        
     }
 
     public static void eliminandoProductos(){
@@ -265,7 +326,6 @@ public class App {
     }
     public static void ventas(){
 
-        
         int contador = 0;
         System.out.println("¿Cuantos productos venderá?");
         int cantidad = leer.nextInt();
@@ -301,14 +361,63 @@ public class App {
                 }
             }
             
-                factura.agregarItem(itemFactura);
-            
-            
-            
-            
+            factura.agregarItem(itemFactura);
             leer.nextLine();
             contador++;
             } while (contador<cantidad);
             factura.imprimirFactura();
-        }  
+        } 
+        
+        private static void escribirEnArchivoAleatorio(){
+        try {
+            
+            archivo = new RandomAccessFile(rutname+"Registrar_Producto.txt", "rw");
+            
+            archivo.seek(archivo.length());
+            
+            escribir= new ByteArrayOutputStream();
+            salida = new ObjectOutputStream(escribir);
+            salida.writeObject(otroProducto.toString());
+            
+            salida.close();
+            
+            arreglo = escribir.toByteArray();
+            
+            archivo.write(arreglo);
+            
+            archivo.close();
+        } catch (Exception e) {
+            System.out.println("No se puede escribir en el archivo" 
+            + e.getMessage());
+        }
+    }
+
+        private static void leerArchivoAleatorio(){
+        try {
+            
+            archivo = new RandomAccessFile(rutname+"Registrar_Producto.txt", "r");
+            
+            archivo.seek(0);
+            
+            arreglo = new byte[(int)archivo.length()];
+            
+            archivo.readFully(arreglo);
+            
+            leer2 = new ByteArrayInputStream(arreglo);
+            entrada = new ObjectInputStream(leer2);
+            
+            otroProducto=(Producto) entrada.readObject();
+            System.out.println(otroProducto);
+            
+            entrada.close();
+            
+        } catch (Exception e) {
+            System.out.println("No se puede leer el archivo" 
+            + e.getMessage());
+        }
+    }
+    private static boolean pedirDatos(){
+        mostrandoProducts();
+        return true;
+    }
     }

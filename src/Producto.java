@@ -1,4 +1,6 @@
-public class Producto { //angel quiere hacerla abstracta 
+import java.io.Serializable;
+
+public class Producto implements Serializable { //angel quiere hacerla abstracta 
 
     public String nombre;
     public String ID;
@@ -35,5 +37,10 @@ public class Producto { //angel quiere hacerla abstracta
     }
     public double restarcantidad(double n ){
         return cantidadDisponible-n;
+    }
+    public  String toString() {
+        return this.nombre + "- " + this.ID + "- " 
+                + this.precio + "- " + this.getCost()+ "- " 
+                + this.descripcion + "- "+ this.cantidadDisponible + " .\n";
     }
 }
