@@ -1,9 +1,6 @@
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -29,7 +26,7 @@ public class App {
     public static int n;
     public static Factura factura = new Factura(1);
     public static String rutname= "C:\\Users\\LEGION\\Desktop\\Proyecto things\\ProyectoFinalDeCurso\\Archivo_Producto\\";
-    public static RandomAccessFile archivo=null;
+    public static RandomAccessFile RAF=null;
     
     
     
@@ -38,12 +35,18 @@ public class App {
     
         do {
 
+            try {
+                
+            
             System.out.println("1. Producto");
             System.out.println("2. Venta");
             System.out.println("3. Salir");
-            opcion = leer.nextInt();
-            
+            opcion = leer.nextInt();  
+        } catch (Exception e) {
+            System.out.println("Ingrese únicamente números: "+e);
             leer.nextLine();
+            continue;
+        }
             switch (opcion) {
                 case 1:
 
@@ -59,9 +62,12 @@ public class App {
                     
                 } catch (Exception e) {
                     System.out.println(e);
+                    leer.nextLine();
+                    break;
                 }
+                
     
-                leer.nextLine();
+                
 
                 switch (opcion) {
                     
@@ -360,13 +366,15 @@ public class App {
         public static void leerarchivos(){
             int contador=0;
             try (RandomAccessFile RAF= new RandomAccessFile(rutname+"Registrar_Productos.txt", "r")){
+            RAF.seek(170 * contador);
+
                 do {
                     try {
-                        RAF.seek(0);
+                        
                         for (int i = 0; i < 25; i++) {
                             nombre+=RAF.readChar();
                         }
-                        System.out.println(nombre);
+                        System.out.println(" "+nombre);
         
                         System.out.println(RAF.readDouble());
                         System.out.println(RAF.readDouble());
@@ -374,19 +382,16 @@ public class App {
                         for (int j = 0; j < 50; j++) {
                             descripcion+=RAF.readChar();
                         }
-                        System.out.println(descripcion);
+                        System.out.println(" "+descripcion);
                     } catch (IOException e) {
                     System.out.println(e.getMessage());
                     }
                     contador++;
-                } while (contador>RAF.length());
+                } while (contador<=5);
                 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-    
-            
-            
         }
     }
     // 50+100+8+8+4=170 
