@@ -1,5 +1,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
@@ -17,14 +19,10 @@ public class App {
     public static String descripcion="";
     public static int cantidadDisponible=0;
     public static String cantidadDisponiblefalsa="";
-    public static String NamedeCliente;
-    public static String NumdeCliente;
-    public static int CantidadProducts;
     public static Scanner leer = new Scanner (System.in);
     public static boolean cont = true;
     public static int opcion;
     public static ArrayList <Producto> Lista = new ArrayList<Producto>();
-    public static ArrayList <Cliente> ListaCliente = new ArrayList<Cliente>();
     public static ArrayList <Producto> Listatem = new ArrayList<Producto>();
     public static Producto otroProducto;
     public static ItemFactura itemFactura; 
@@ -32,11 +30,7 @@ public class App {
     public static Factura factura = new Factura(1);
     public static String rutname= "C:\\Users\\LEGION\\Desktop\\Proyecto things\\ProyectoFinalDeCurso\\Archivo_Producto\\";
     public static RandomAccessFile archivo=null;
-    private static byte []arreglo=null;
-    private static ByteArrayOutputStream escribir=null;
-    private static ObjectOutputStream salida=null;
-    private static ByteArrayInputStream leer2=null;
-    private static ObjectInputStream entrada = null;
+    
     
     
     public static void main(String[] args) throws Exception {
@@ -58,8 +52,9 @@ public class App {
                     System.out.println("2. Eliminar Productos");
                     System.out.println("3. Mostrar Productos");
                     System.out.println("4. Modificar Productos");
-                    System.out.println("5. Salir");
-                    System.out.println("6. nuevas opciones");
+                    System.out.println("5. Escribir en Archivo");
+                    System.out.println("6. Leer Archivo ");
+                    System.out.println("7. Salir");
                     opcion = leer.nextInt();
                     
                 } catch (Exception e) {
@@ -89,20 +84,19 @@ public class App {
                     break;
 
                     case 5:
+                    System.out.println("Escribiendo en Archivo...");
+                    escribirenarchivo();
 
-                    cont = false;
                     break;
 
                     case 6:
-                    if(pedirDatos()){
+                    System.out.println("Leyendo Archivos...");
+                    leerarchivos();
                     
-                        try {
-                            escribirEnArchivoAleatorio();
-                            
-                        } catch (Exception e) {
-                            System.out.println("No se han podido registrar los producto.");
-                        }
-                    }
+                    break;
+                    case 7:
+                    
+                    cont = false;
                     break;
                     default:
                     System.out.println("Fuera de rango. Coloque en el rango (1-5)");
@@ -111,28 +105,16 @@ public class App {
 
                 continue;
 
-
                 case 2:
                 System.out.println("Venta");
-                System.out.println("1. Agregar Clientes");
-                System.out.println("2. Mostrar Clientes");
-                System.out.println("3. Realizar la venta");
+                System.out.println("1. Realizar Ventas");
+                System.out.println("2. Salir");
                 opcion=leer.nextInt();
                 leer.nextLine();
 
                 switch (opcion) {
                     case 1://agregar cliente 
-                        agregarcliente();
-                        break;
-                    case 2: // mostrar cliente 
-                        mostrandoCliente();
-                        break;
-                    case 3: 
-                            //Registrar ventas y Clientes
-                        ventas();
-                        break;
-                
-                    default:
+                    ventas();
                         break;
                 }
                 break;
@@ -291,24 +273,7 @@ public class App {
             }  
         }
     }
-    public static void agregarcliente(){
-        System.out.print("Ingrese el nombre cliente: ");
-        NamedeCliente= leer.nextLine();
-        System.out.println("Numero del Teléfono: ");
-        NumdeCliente= leer.nextLine();
-        Cliente cliente= new Cliente(NamedeCliente, NumdeCliente);
-        ListaCliente.add(cliente);
-    }
-
-    public static void mostrandoCliente(){
-        if (ListaCliente.isEmpty()) {
-            System.out.println("Lista de cliente vacía.");
-        }else{
-            for (Cliente mostrar : ListaCliente) {
-                mostrar.mostrarCliente();
-            }
-        }
-    }
+    
     public static void buscarproductos(){
         if (Lista.isEmpty()){
             System.out.println("Debe agregar productos para que puedan ser buscados ");
@@ -368,56 +333,60 @@ public class App {
             factura.imprimirFactura();
         } 
         
-        private static void escribirEnArchivoAleatorio(){
-        try {
-            
-            archivo = new RandomAccessFile(rutname+"Registrar_Producto.txt", "rw");
-            
-            archivo.seek(archivo.length());
-            
-            escribir= new ByteArrayOutputStream();
-            salida = new ObjectOutputStream(escribir);
-            salida.writeObject(otroProducto.toString());
-            
-            salida.close();
-            
-            arreglo = escribir.toByteArray();
-            
-            archivo.write(arreglo);
-            
-            archivo.close();
-        } catch (Exception e) {
-            System.out.println("No se puede escribir en el archivo" 
-            + e.getMessage());
-        }
-    }
+        public static void escribirenarchivo( ){
+            try (RandomAccessFile RAF= new RandomAccessFile(rutname+"Registrar_Productos.txt", "rw")){
+                for (Producto i : Lista) {
 
-        private static void leerArchivoAleatorio(){
-        try {
+                    StringBuffer sb= new StringBuffer(i.nombre);
+                    sb.setLength(25);
+                    RAF.writeChars(sb.toString());
+                    RAF.writeDouble(i.precio);
+                    RAF.writeDouble(i.getCost());
+                    RAF.writeInt(i.cantidadDisponible);
+                    StringBuffer descrip= new StringBuffer(i.descripcion);
+                    descrip.setLength(50);
+                    RAF.writeChars(descrip.toString());                 
+                }
+                
+                
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }catch(IOException e){
+                System.out.println(e.getMessage());
+
+            }
+        }
+
+        public static void leerarchivos(){
+            int contador=0;
+            try (RandomAccessFile RAF= new RandomAccessFile(rutname+"Registrar_Productos.txt", "r")){
+                do {
+                    try {
+                        RAF.seek(0);
+                        for (int i = 0; i < 25; i++) {
+                            nombre+=RAF.readChar();
+                        }
+                        System.out.println(nombre);
+        
+                        System.out.println(RAF.readDouble());
+                        System.out.println(RAF.readDouble());
+                        System.out.println(RAF.readInt());
+                        for (int j = 0; j < 50; j++) {
+                            descripcion+=RAF.readChar();
+                        }
+                        System.out.println(descripcion);
+                    } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                    }
+                    contador++;
+                } while (contador>RAF.length());
+                
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+    
             
-            archivo = new RandomAccessFile(rutname+"Registrar_Producto.txt", "r");
             
-            archivo.seek(0);
-            
-            arreglo = new byte[(int)archivo.length()];
-            
-            archivo.readFully(arreglo);
-            
-            leer2 = new ByteArrayInputStream(arreglo);
-            entrada = new ObjectInputStream(leer2);
-            
-            otroProducto=(Producto) entrada.readObject();
-            System.out.println(otroProducto);
-            
-            entrada.close();
-            
-        } catch (Exception e) {
-            System.out.println("No se puede leer el archivo" 
-            + e.getMessage());
         }
     }
-    private static boolean pedirDatos(){
-        mostrandoProducts();
-        return true;
-    }
-    }
+    // 50+100+8+8+4=170 
